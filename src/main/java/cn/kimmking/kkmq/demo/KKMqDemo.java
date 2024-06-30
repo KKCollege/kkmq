@@ -1,9 +1,9 @@
 package cn.kimmking.kkmq.demo;
 
-import cn.kimmking.kkmq.core.KKBroker;
-import cn.kimmking.kkmq.core.KKConsumer;
-import cn.kimmking.kkmq.core.KKMesage;
-import cn.kimmking.kkmq.core.KKProducer;
+import cn.kimmking.kkmq.client.KKBroker;
+import cn.kimmking.kkmq.client.KKConsumer;
+import cn.kimmking.kkmq.model.KKMesage;
+import cn.kimmking.kkmq.client.KKProducer;
 import lombok.SneakyThrows;
 
 /**

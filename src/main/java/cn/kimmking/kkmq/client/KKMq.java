@@ -1,5 +1,6 @@
-package cn.kimmking.kkmq.core;
+package cn.kimmking.kkmq.client;
 
+import cn.kimmking.kkmq.model.KKMesage;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 

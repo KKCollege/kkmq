@@ -1,4 +1,8 @@
-package cn.kimmking.kkmq.core;
+package cn.kimmking.kkmq.client;
+
+import cn.kimmking.kkmq.model.KKMesage;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * message consumer.
@@ -8,12 +12,16 @@ package cn.kimmking.kkmq.core;
  */
 public class KKConsumer<T> {
 
+    private String id;
     KKBroker broker;
     String topic;
     KKMq mq;
 
+    static AtomicInteger idgen = new AtomicInteger(0);
+
     public KKConsumer(KKBroker broker) {
         this.broker = broker;
+        this.id = "CID" + idgen.getAndIncrement();
     }
 
     public void subscribe(String topic) {

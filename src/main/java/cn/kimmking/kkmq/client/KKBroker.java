@@ -1,4 +1,4 @@
-package cn.kimmking.kkmq.core;
+package cn.kimmking.kkmq.client;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

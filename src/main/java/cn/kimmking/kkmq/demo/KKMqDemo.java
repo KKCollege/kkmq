@@ -2,7 +2,7 @@ package cn.kimmking.kkmq.demo;
 
 import cn.kimmking.kkmq.client.KKBroker;
 import cn.kimmking.kkmq.client.KKConsumer;
-import cn.kimmking.kkmq.model.KKMesage;
+import cn.kimmking.kkmq.model.Message;
 import cn.kimmking.kkmq.client.KKProducer;
 import lombok.SneakyThrows;
 
@@ -33,11 +33,11 @@ public class KKMqDemo {
 
         for (int i = 0; i < 10; i++) {
             Order order = new Order(ids, "item" + ids, 100 * ids);
-            producer.send(topic, new KKMesage<>((long) ids ++, order, null));
+            producer.send(topic, new Message<>((long) ids ++, order, null));
         }
 
         for (int i = 0; i < 10; i++) {
-            KKMesage<Order> message = (KKMesage<Order>) consumer.poll(1000);
+            Message<Order> message = (Message<Order>) consumer.poll(1000);
             System.out.println(message);
         }
 
@@ -48,17 +48,17 @@ public class KKMqDemo {
             }
             if (c == 'p') {
                 Order order = new Order(ids, "item" + ids, 100 * ids);
-                producer.send(topic, new KKMesage<>(ids ++, order, null));
+                producer.send(topic, new Message<>(ids ++, order, null));
                 System.out.println("send ok => " + order);
             }
             if (c == 'c') {
-                KKMesage<Order> message = (KKMesage<Order>) consumer.poll(1000);
+                Message<Order> message = (Message<Order>) consumer.poll(1000);
                 System.out.println("poll ok => " + message);
             }
             if (c == 'a') {
                 for (int i = 0; i < 10; i++) {
                     Order order = new Order(ids, "item" + ids, 100 * ids);
-                    producer.send(topic, new KKMesage<>((long) ids ++, order, null));
+                    producer.send(topic, new Message<>((long) ids ++, order, null));
                 }
                 System.out.println("send 10 orders...");
             }

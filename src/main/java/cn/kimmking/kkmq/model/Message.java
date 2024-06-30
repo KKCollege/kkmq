@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class KKMesage<T> {
+public class Message<T> {
     //private String topic;
     static AtomicLong idgen = new AtomicLong(0);
     private Long id;
@@ -28,7 +28,7 @@ public class KKMesage<T> {
         return idgen.getAndIncrement();
     }
 
-    public static KKMesage<?> create(String body, Map<String, String> headers) {
-        return new KKMesage<>(getId(), body, headers);
+    public static Message<?> create(String body, Map<String, String> headers) {
+        return new Message<>(getId(), body, headers);
     }
 }

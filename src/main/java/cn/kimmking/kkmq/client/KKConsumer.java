@@ -1,6 +1,6 @@
 package cn.kimmking.kkmq.client;
 
-import cn.kimmking.kkmq.model.KKMesage;
+import cn.kimmking.kkmq.model.Message;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,7 +30,7 @@ public class KKConsumer<T> {
         if(mq == null) throw new RuntimeException("topic not found");
     }
 
-    public KKMesage<T> poll(long timeout) {
+    public Message<T> poll(long timeout) {
         return mq.poll(timeout);
     }
 

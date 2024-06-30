@@ -23,11 +23,11 @@ public class Result<T> {
         return new Result<>(1, msg);
     }
 
-    public static Result<KKMesage<?>> msg(String msg) {
-        return new Result<>(1, KKMesage.create(msg, null));
+    public static Result<Message<?>> msg(String msg) {
+        return new Result<>(1, Message.create(msg, null));
     }
 
-    public static Result<KKMesage<?>> msg(KKMesage<?> msg) {
+    public static Result<Message<?>> msg(Message<?> msg) {
         return new Result<>(1, msg);
     }
 }

@@ -1,6 +1,6 @@
 package cn.kimmking.kkmq.server;
 
-import cn.kimmking.kkmq.model.KKMesage;
+import cn.kimmking.kkmq.model.Message;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,14 +21,14 @@ public class MessageQueue {
 
     private Map<String, MessageSubscription> subscriptions = new HashMap<>();
     private String topic;
-    private KKMesage<?>[] queue = new KKMesage[1024 * 10];
+    private Message<?>[] queue = new Message[1024 * 10];
     private int index = 0;
 
     public MessageQueue(String topic) {
         this.topic = topic;
     }
 
-    public int send(KKMesage<?> message) {
+    public int send(Message<?> message) {
         if (index >= queue.length) {
             return -1;
         }
@@ -36,7 +36,7 @@ public class MessageQueue {
         return index;
     }
 
-    public KKMesage<?> recv(int ind) {
+    public Message<?> recv(int ind) {
         if(ind <= index) return queue[ind];
         return null;
     }
@@ -63,13 +63,13 @@ public class MessageQueue {
         messageQueue.unsubscribe(subscription);
     }
 
-    public static int send(String topic, String consumerId, KKMesage<String> message) {
+    public static int send(String topic, String consumerId, Message<String> message) {
         MessageQueue messageQueue = queues.get(topic);
         if(messageQueue == null) throw new RuntimeException("topic not found");
         return messageQueue.send(message);
     }
 
-    public static KKMesage<?> recv(String topic, String consumerId, int ind) {
+    public static Message<?> recv(String topic, String consumerId, int ind) {
         MessageQueue messageQueue = queues.get(topic);
         if(messageQueue == null) throw new RuntimeException("topic not found");
         if(messageQueue.subscriptions.containsKey(consumerId)) {
@@ -80,7 +80,7 @@ public class MessageQueue {
     }
 
     // 使用此方法，需要手工调用ack，更新订阅关系里的offset
-    public static KKMesage<?> recv(String topic, String consumerId) {
+    public static Message<?> recv(String topic, String consumerId) {
         MessageQueue messageQueue = queues.get(topic);
         if(messageQueue == null) throw new RuntimeException("topic not found");
         if(messageQueue.subscriptions.containsKey(consumerId)) {

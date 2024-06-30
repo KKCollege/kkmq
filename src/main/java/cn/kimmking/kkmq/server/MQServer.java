@@ -1,6 +1,6 @@
 package cn.kimmking.kkmq.server;
 
-import cn.kimmking.kkmq.model.KKMesage;
+import cn.kimmking.kkmq.model.Message;
 import cn.kimmking.kkmq.model.Result;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,14 +22,14 @@ public class MQServer {
     @RequestMapping("/send")
     public Result<String> send(@RequestParam("t") String topic,
                                @RequestParam("cid") String consumerId,
-                               @RequestBody KKMesage<String> message) {
+                               @RequestBody Message<String> message) {
         return Result.ok(""+MessageQueue.send(topic, consumerId, message));
     }
 
     // recv
     @RequestMapping("/recv")
-    public Result<KKMesage<?>> recv(@RequestParam("t") String topic,
-                                         @RequestParam("cid") String consumerId) {
+    public Result<Message<?>> recv(@RequestParam("t") String topic,
+                                   @RequestParam("cid") String consumerId) {
         return Result.msg(MessageQueue.recv(topic, consumerId));
     }
 

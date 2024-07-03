@@ -1,6 +1,6 @@
 package cn.kimmking.kkmq.client;
 
-import cn.kimmking.kkmq.model.KKMesage;
+import cn.kimmking.kkmq.model.Message;
 
 /**
  * message listener.
@@ -10,6 +10,6 @@ import cn.kimmking.kkmq.model.KKMesage;
  */
 public interface KKListener<T> {
 
-    void onMessage(KKMesage<T> message);
+    void onMessage(Message<T> message);
 
 }

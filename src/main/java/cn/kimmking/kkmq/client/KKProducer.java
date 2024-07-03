@@ -1,6 +1,6 @@
 package cn.kimmking.kkmq.client;
 
-import cn.kimmking.kkmq.model.KKMesage;
+import cn.kimmking.kkmq.model.Message;
 import lombok.AllArgsConstructor;
 
 /**
@@ -14,10 +14,8 @@ public class KKProducer {
 
     KKBroker broker;
 
-    public boolean send(String topic, KKMesage message) {
-        KKMq mq = broker.find(topic);
-        if(mq == null) throw new RuntimeException("topic not found");
-        return mq.send(message);
+    public boolean send(String topic, Message message) {
+        return broker.send(topic, message);
     }
 
 }

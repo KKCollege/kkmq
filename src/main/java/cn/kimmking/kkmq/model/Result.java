@@ -3,6 +3,8 @@ package cn.kimmking.kkmq.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Result for MQServer.
  *
@@ -23,11 +25,15 @@ public class Result<T> {
         return new Result<>(1, msg);
     }
 
-    public static Result<KKMesage<?>> msg(String msg) {
-        return new Result<>(1, KKMesage.create(msg, null));
+    public static Result<Message<?>> msg(String msg) {
+        return new Result<>(1, Message.create(msg, null));
     }
 
-    public static Result<KKMesage<?>> msg(KKMesage<?> msg) {
+    public static Result<Message<?>> msg(Message<?> msg) {
+        return new Result<>(1, msg);
+    }
+
+    public static Result<List<Message<?>>> msg(List<Message<?>> msg) {
         return new Result<>(1, msg);
     }
 }

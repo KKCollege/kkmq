@@ -1,6 +1,7 @@
 package cn.kimmking.kkmq.client;
 
-import cn.kimmking.kkmq.model.KKMesage;
+import cn.kimmking.kkmq.model.Message;
+import lombok.Getter;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -14,8 +15,6 @@ public class KKConsumer<T> {
 
     private String id;
     KKBroker broker;
-    String topic;
-    KKMq mq;
 
     static AtomicInteger idgen = new AtomicInteger(0);
 
@@ -24,18 +23,33 @@ public class KKConsumer<T> {
         this.id = "CID" + idgen.getAndIncrement();
     }
 
-    public void subscribe(String topic) {
-        this.topic = topic;
-        mq = broker.find(topic);
-        if(mq == null) throw new RuntimeException("topic not found");
+    public void sub(String topic) {
+        broker.sub(topic, id);
     }
 
-    public KKMesage<T> poll(long timeout) {
-        return mq.poll(timeout);
+    public void unsub(String topic) {
+        broker.unsub(topic, id);
     }
 
-    public void listen(KKListener<T> listener) {
-        mq.addListener(listener);
+    public Message<T> recv(String topic) {
+        return broker.recv(topic, id);
     }
+
+    public boolean ack(String topic, int offset) {
+        return broker.ack(topic, id, offset);
+    }
+
+    public boolean ack(String topic, Message<?> message) {
+        int offset = Integer.parseInt(message.getHeaders().get("X-offset"));
+        return ack(topic, offset);
+    }
+
+    public void listen(String topic, KKListener<T> listener) {
+        this.listener = listener;
+        broker.addConsumer(topic, this);
+    }
+
+    @Getter
+    private KKListener listener;
 
 }

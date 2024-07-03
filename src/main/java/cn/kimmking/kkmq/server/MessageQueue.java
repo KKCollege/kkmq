@@ -5,6 +5,8 @@ import cn.kimmking.kkmq.model.Message;
 import java.util.HashMap;
 import java.util.Map;
 
+import static cn.kimmking.kkmq.model.Message.HEADER_KEY_OFFSET;
+
 /**
  * queues.
  *
@@ -17,6 +19,7 @@ public class MessageQueue {
     private static final String TEST_TOPIC = "cn.kimmking.test";
     static {
         queues.put(TEST_TOPIC, new MessageQueue(TEST_TOPIC));
+        queues.put("a", new MessageQueue("a"));
     }
 
     private Map<String, MessageSubscription> subscriptions = new HashMap<>();
@@ -32,12 +35,18 @@ public class MessageQueue {
         if (index >= queue.length) {
             return -1;
         }
+        message.getHeaders().put(HEADER_KEY_OFFSET, String.valueOf(index));
+        System.out.println(" ==> send : " + message);
         queue[index++] = message;
         return index;
     }
 
     public Message<?> recv(int ind) {
-        if(ind <= index) return queue[ind];
+        if(ind <= index) {
+            Message<?> message = queue[ind];
+            System.out.println(" ==> recv : " + message);
+            return message;
+        }
         return null;
     }
 
@@ -63,7 +72,7 @@ public class MessageQueue {
         messageQueue.unsubscribe(subscription);
     }
 
-    public static int send(String topic, String consumerId, Message<String> message) {
+    public static int send(String topic, Message<String> message) {
         MessageQueue messageQueue = queues.get(topic);
         if(messageQueue == null) throw new RuntimeException("topic not found");
         return messageQueue.send(message);
@@ -85,7 +94,7 @@ public class MessageQueue {
         if(messageQueue == null) throw new RuntimeException("topic not found");
         if(messageQueue.subscriptions.containsKey(consumerId)) {
             int ind = messageQueue.subscriptions.get(consumerId).getOffset();
-            return messageQueue.recv(ind);
+            return messageQueue.recv(ind + 1);
         }
         throw new RuntimeException("subscriptions not found for topic/consumerId = "
                 + topic + "/" + consumerId);
@@ -97,6 +106,7 @@ public class MessageQueue {
         if(messageQueue.subscriptions.containsKey(consumerId)) {
             MessageSubscription subscription = messageQueue.subscriptions.get(consumerId);
             if(offset > subscription.getOffset() && offset <= messageQueue.index) {
+                System.out.println(" ===> ack : topic/cid/offset = " + topic + "/" + consumerId + "/" +offset);
                 subscription.setOffset(offset);
                 return offset;
             }

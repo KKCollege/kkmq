@@ -15,9 +15,7 @@ public class KKProducer {
     KKBroker broker;
 
     public boolean send(String topic, Message message) {
-        KKMq mq = broker.find(topic);
-        if(mq == null) throw new RuntimeException("topic not found");
-        return mq.send(message);
+        return broker.send(topic, message);
     }
 
 }

@@ -6,6 +6,8 @@ import cn.kimmking.kkmq.model.Message;
 import cn.kimmking.kkmq.client.KKProducer;
 import lombok.SneakyThrows;
 
+import static cn.kimmking.kkmq.model.Message.HEADER_KEY_OFFSET;
+
 /**
  * mq demo for order.
  *
@@ -19,26 +21,29 @@ public class KKMqDemo {
 
         long ids = 0;
 
-        String topic = "kk.order";
+        String topic = "cn.kimmking.test";
         KKBroker broker = new KKBroker();
-        broker.createTopic(topic);
 
         KKProducer producer = broker.createProducer();
-        KKConsumer<?> consumer = broker.createConsumer(topic);
-        consumer.subscribe(topic);
-        consumer.listen(message -> {
-            System.out.println(" onMessage => " + message);
-        });
+//        KKConsumer<?> consumer = broker.createConsumer(topic);
+//        consumer.subscribe(topic);
+//        consumer.listen(message -> {
+//            System.out.println(" onMessage => " + message);
+//        });
 
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1; i++) {
             Order order = new Order(ids, "item" + ids, 100 * ids);
-            producer.send(topic, new Message<>((long) ids ++, order, null));
+            producer.send(topic, new Message<String>((long) ids ++, Message.json(order), null));
         }
 
-        for (int i = 0; i < 10; i++) {
-            Message<Order> message = (Message<Order>) consumer.poll(1000);
-            System.out.println(message);
+        KKConsumer<?> consumer1 = broker.createConsumer(topic);
+        consumer1.subscribe(topic);
+
+        for (int i = 0; i < 1; i++) {
+            Message<String> message = consumer1.recv(topic);
+            System.out.println("recv and ack for msg: " + message);
+            consumer1.ack(topic, message);
         }
 
         while (true) {
@@ -48,17 +53,18 @@ public class KKMqDemo {
             }
             if (c == 'p') {
                 Order order = new Order(ids, "item" + ids, 100 * ids);
-                producer.send(topic, new Message<>(ids ++, order, null));
+                producer.send(topic, new Message<>(ids ++, Message.json(order), null));
                 System.out.println("send ok => " + order);
             }
             if (c == 'c') {
-                Message<Order> message = (Message<Order>) consumer.poll(1000);
+                Message<String> message = consumer1.recv(topic);
                 System.out.println("poll ok => " + message);
+                consumer1.ack(topic, message);
             }
             if (c == 'a') {
                 for (int i = 0; i < 10; i++) {
                     Order order = new Order(ids, "item" + ids, 100 * ids);
-                    producer.send(topic, new Message<>((long) ids ++, order, null));
+                    producer.send(topic, new Message<>((long) ids ++, Message.json(order), null));
                 }
                 System.out.println("send 10 orders...");
             }

@@ -4,6 +4,7 @@ import cn.kimmking.kkmq.client.KKBroker;
 import cn.kimmking.kkmq.client.KKConsumer;
 import cn.kimmking.kkmq.model.Message;
 import cn.kimmking.kkmq.client.KKProducer;
+import cn.kimmking.kkmq.model.Stat;
 import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
 
@@ -45,7 +46,8 @@ public class KKMqDemo {
         while (true) {
             char c = (char) System.in.read();
             if (c == 'q' || c == 'e') {
-               // consumer1.unsub(topic);
+               // consumer1.unsub(topic);s
+                System.out.println(" [exit] : " + c );
                 break;
             }
             if (c == 'p') {
@@ -54,18 +56,24 @@ public class KKMqDemo {
                 System.out.println("produce ok => " + order);
             }
             if (c == 'c') {
-//                Message<String> message = (Message<String>) consumer1.recv(topic);
-//                System.out.println("consume ok => " + message);
-//                consumer1.ack(topic, message);
+                Message<String> message = (Message<String>) consumer1.recv(topic);
+                System.out.println("consume ok => " + message);
+                consumer1.ack(topic, message);
             }
-            if (c == 'a') {
+            if (c == 's') {
+                Stat stat = consumer1.stat(topic);
+                System.out.println(stat);
+            }
+            if (c == 'b') {
                 for (int i = 0; i < 10; i++) {
                     Order order = new Order(ids, "item" + ids, 100 * ids);
                     producer.send(topic, new Message<>((long) ids ++, JSON.toJSONString(order), null));
                 }
-                System.out.println("produce 10 orders...");
+                System.out.println("batch produce 10 orders...");
             }
         }
+
+        System.exit(1);
 
     }
 

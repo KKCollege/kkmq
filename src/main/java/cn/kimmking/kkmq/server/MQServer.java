@@ -1,7 +1,9 @@
 package cn.kimmking.kkmq.server;
 
 import cn.kimmking.kkmq.model.Message;
+import cn.kimmking.kkmq.model.Subscription;
 import cn.kimmking.kkmq.model.Result;
+import cn.kimmking.kkmq.model.Stat;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,7 +55,7 @@ public class MQServer {
     @RequestMapping("/sub")
     public Result<String> sub(@RequestParam("t") String topic,
                               @RequestParam("cid") String consumerId) {
-        MessageQueue.sub(new MessageSubscription(topic, consumerId, -1));
+        MessageQueue.sub(new Subscription(topic, consumerId, -1));
         return Result.ok();
     }
 
@@ -61,8 +63,14 @@ public class MQServer {
     @RequestMapping("/unsub")
     public Result<String> unsub(@RequestParam("t") String topic,
                                       @RequestParam("cid") String consumerId) {
-        MessageQueue.unsub(new MessageSubscription(topic, consumerId, -1));
+        MessageQueue.unsub(new Subscription(topic, consumerId, -1));
         return Result.ok();
+    }
+
+    @RequestMapping("/stat")
+    public Result<Stat> stat(@RequestParam("t") String topic,
+                             @RequestParam("cid") String consumerId) {
+        return Result.stat(MessageQueue.stat(topic, consumerId));
     }
 
 }

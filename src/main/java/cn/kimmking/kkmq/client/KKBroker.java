@@ -2,6 +2,7 @@ package cn.kimmking.kkmq.client;
 
 import cn.kimmking.kkmq.model.Message;
 import cn.kimmking.kkmq.model.Result;
+import cn.kimmking.kkmq.model.Stat;
 import cn.kimmking.utils.HttpUtils;
 import cn.kimmking.utils.ThreadUtils;
 import com.alibaba.fastjson.JSON;
@@ -105,5 +106,14 @@ public class KKBroker {
     private MultiValueMap<String, KKConsumer<?>> consumers = new LinkedMultiValueMap<>();
     public void addConsumer(String topic, KKConsumer<?> consumer) {
         consumers.add(topic, consumer);
+    }
+
+    public Stat stat(String topic, String cid) {
+        System.out.println(" ==>> stat topic/cid: " + topic + "/" + cid );
+        Result<Stat> result = HttpUtils.httpGet(
+                bokerUrl + "/stat?t=" + topic + "&cid=" + cid,
+                new TypeReference<Result<Stat>>(){});
+        System.out.println(" ==>> stat result: " + result);
+        return result.getData();
     }
 }

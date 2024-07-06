@@ -1,6 +1,7 @@
 package cn.kimmking.kkmq.client;
 
 import cn.kimmking.kkmq.model.Message;
+import cn.kimmking.kkmq.model.Stat;
 import lombok.Getter;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,4 +53,7 @@ public class KKConsumer<T> {
     @Getter
     private KKListener listener;
 
+    public Stat stat(String topic) {
+        return broker.stat(topic, id);
+    }
 }

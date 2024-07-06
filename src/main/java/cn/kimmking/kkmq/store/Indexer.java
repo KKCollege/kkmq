@@ -18,7 +18,7 @@ import java.util.Map;
 public class Indexer {
 
     static MultiValueMap<String, Entry> indexes = new LinkedMultiValueMap<>();
-    static Map<Integer, Entry> mappings = new HashMap<>();
+    static Map<String, Map<Integer, Entry>> mappings = new HashMap<>();
 
     @AllArgsConstructor
     @Data
@@ -27,10 +27,15 @@ public class Indexer {
         int length;
     }
 
-    public static void addEntry(String topic, int offset, int length) {
-        Entry value = new Entry(offset, length);
+    public static void addEntry(String topic, int offset, int len) {
+        System.out.println(" ===❀❀❀❀❀❀❀>>>> add entry(t/p/l):" + topic + "/" + offset + "/" + len);
+        Entry value = new Entry(offset, len);
         indexes.add(topic, value);
-        mappings.put(offset, value);
+        putMapping(topic, offset, value);
+    }
+
+    private static void putMapping(String topic, int offset, Entry value) {
+        mappings.computeIfAbsent(topic, k -> new HashMap<>()).put(offset, value);
     }
 
     public static List<Entry> getEntries(String topic) {
@@ -38,7 +43,8 @@ public class Indexer {
     }
 
     public static Entry getEntry(String topic, int offset) {
-        return mappings.get(offset);
+        Map<Integer, Entry> map = mappings.get(topic);
+        return map==null?null:map.get(offset);
     }
 
 

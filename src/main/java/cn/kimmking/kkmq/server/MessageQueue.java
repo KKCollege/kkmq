@@ -1,8 +1,12 @@
 package cn.kimmking.kkmq.server;
 
 import cn.kimmking.kkmq.model.Message;
+import cn.kimmking.kkmq.model.Subscription;
+import cn.kimmking.kkmq.model.Stat;
 import cn.kimmking.kkmq.store.Indexer;
 import cn.kimmking.kkmq.store.Store;
+import lombok.Data;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,12 +25,13 @@ public class MessageQueue {
     private static final String TEST_TOPIC = "cn.kimmking.test";
     static {
         queues.put(TEST_TOPIC, new MessageQueue(TEST_TOPIC));
-        queues.put("a", new MessageQueue("a"));
+//        queues.put("a", new MessageQueue("a"));
     }
 
-    private Map<String, MessageSubscription> subscriptions = new HashMap<>();
+    private Map<String, Subscription> subscriptions = new HashMap<>();
     private String topic;
 //    private Message<?>[] queue = new Message[1024 * 10];
+    @Getter
     private Store store = null;
 //    private int index = 0;
 
@@ -60,6 +65,12 @@ public class MessageQueue {
                 + topic + "/" + consumerId);
     }
 
+    public static Stat stat(String topic, String consumerId) {
+        MessageQueue queue = queues.get(topic);
+        Subscription subscription = queue.subscriptions.get(consumerId);
+        return new Stat(subscription, queue.getStore().total(), queue.getStore().pos());
+    }
+
     public int send(Message<String> message) {
         int offset = store.pos();
         message.getHeaders().put("X-offset", String.valueOf(offset));
@@ -71,24 +82,24 @@ public class MessageQueue {
         return store.read(offset);
     }
 
-    public void subscribe(MessageSubscription subscription) {
+    public void subscribe(Subscription subscription) {
         String consumerId = subscription.getConsumerId();
         subscriptions.putIfAbsent(consumerId, subscription);
     }
 
-    public void unsubscribe(MessageSubscription subscription) {
+    public void unsubscribe(Subscription subscription) {
         String consumerId = subscription.getConsumerId();
         subscriptions.remove(consumerId);
     }
 
-    public static void sub(MessageSubscription subscription){
+    public static void sub(Subscription subscription){
         MessageQueue messageQueue = queues.get(subscription.getTopic());
         System.out.println(" ==>> sub: " + subscription);
         if(messageQueue == null) throw new RuntimeException("topic not found");
         messageQueue.subscribe(subscription);
     }
 
-    public static void unsub(MessageSubscription subscription){
+    public static void unsub(Subscription subscription){
         MessageQueue messageQueue = queues.get(subscription.getTopic());
         System.out.println(" ==>> unsub: " + subscription);
         if(messageQueue == null) return;
@@ -136,7 +147,7 @@ public class MessageQueue {
         MessageQueue messageQueue = queues.get(topic);
         if(messageQueue == null) throw new RuntimeException("topic not found");
         if(messageQueue.subscriptions.containsKey(consumerId)) {
-            MessageSubscription subscription = messageQueue.subscriptions.get(consumerId);
+            Subscription subscription = messageQueue.subscriptions.get(consumerId);
             if(offset > subscription.getOffset() && offset < Store.LEN) {
                 System.out.println(" ===>> ack: topic/cid/offset = "
                         + topic + "/" + consumerId + "/" +offset);

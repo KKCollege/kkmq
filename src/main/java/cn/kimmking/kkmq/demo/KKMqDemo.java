@@ -24,23 +24,23 @@ public class KKMqDemo {
         KKBroker broker = KKBroker.getDefault();
 
         KKProducer producer = broker.createProducer();
-        KKConsumer<?> consumer = broker.createConsumer(topic);
-        consumer.listen(topic, message -> {
-            System.out.println(" onMessage => " + message); // 这里处理消息
-        });
+//        KKConsumer<?> consumer = broker.createConsumer(topic);
+//        consumer.listen(topic, message -> {
+//            System.out.println(" onMessage => " + message); // 这里处理消息
+//        });
 
-       // KKConsumer<?> consumer1 = broker.createConsumer(topic);
+       KKConsumer<?> consumer1 = broker.createConsumer(topic);
 
         for (int i = 0; i < 10; i++) {
             Order order = new Order(ids, "item" + ids, 100 * ids);
             producer.send(topic, new Message<>((long) ids ++, JSON.toJSONString(order), null));
         }
 
-//        for (int i = 0; i < 10; i++) {
-//            Message<String> message = (Message<String>) consumer1.recv(topic);
-//            System.out.println(message); // 做业务处理。。。。
-//            consumer1.ack(topic, message);
-//        }
+        for (int i = 0; i < 10; i++) {
+            Message<String> message = (Message<String>) consumer1.recv(topic);
+            System.out.println(message); // 做业务处理。。。。
+            consumer1.ack(topic, message);
+        }
 
         while (true) {
             char c = (char) System.in.read();

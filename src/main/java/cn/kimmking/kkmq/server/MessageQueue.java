@@ -1,6 +1,7 @@
 package cn.kimmking.kkmq.server;
 
 import cn.kimmking.kkmq.model.Message;
+import cn.kimmking.kkmq.store.MessageStore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +25,8 @@ public class MessageQueue {
 
     private Map<String, MessageSubscription> subscriptions = new HashMap<>();
     private String topic;
-    private Message<?>[] queue = new Message[1024 * 10];
+    //private Message<?>[] queue = new Message[1024 * 10];
+    private MessageStore messageStore = new MessageStore();
     private int index = 0;
 
     public MessageQueue(String topic) {
